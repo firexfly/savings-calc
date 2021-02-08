@@ -23,7 +23,7 @@ type InterestSummary struct {
 }
 
 // Print help and exit
-func Help(){
+func Help() {
 	fmt.Print("usage: savings-calc [-m months] [-y years] [-b balance]\n",
 			  "                    [-s save]   [-a AER] [-j] [-i] [-h]\n",
 			  "\n",
@@ -56,11 +56,11 @@ func validateArg(e error) {
 	}
 }
 
-// prompt for an float using a string and pointer to a scanner
-func getFloat(s string, input *bufio.Scanner) float64 {
+// prompt for a sum of money using a string and pointer to a scanner
+func getCash(s string, input *bufio.Scanner) Cash {
 	f, err := strconv.ParseFloat(inputPrompt(s, input), 64)
 	validateArg(err)
-	return f
+	return Cash(f)
 }
 
 // prompt for an int using a string and pointer to a scanner
@@ -74,11 +74,11 @@ func getInt(s string, input *bufio.Scanner) int {
 func InteractiveMode() (*InterestProps) {
 	p		 := InterestProps{}
 	input	 := bufio.NewScanner(os.Stdin)
-	p.Balance = Cash(getFloat("What is your current balance? ",		input))
-	p.Save	  = Cash(getFloat("How much will you save per month? ",	input))
-	p.AER	  = Cash(getFloat("What is your interest rate (AER)? ",	input))
-	p.Years	  = getInt("How many years will you save for? ",		input)
-	p.Months  = getInt("How many months will you save for? ",		input)
+	p.Balance = getCash("What is your current balance? ",		input)
+	p.Save	  = getCash("How much will you save per month? ",	input)
+	p.AER	  = getCash("What is your interest rate (AER)? ",	input)
+	p.Years	  = getInt("How many years will you save for? ",	input)
+	p.Months  = getInt("How many months will you save for? ",	input)
 	return &p
 }
 
@@ -112,7 +112,7 @@ func ParseArgs(argv []string) (*InterestProps) {
 }
 
 // return left hand side percent of right hand side value
-func percent(p, x float64) float64 {
+func percent(p, x Cash) Cash {
 	return x / 100.0 * p
 }
 
@@ -133,7 +133,7 @@ func SavingsCalc(p *InterestProps) (Cash, Cash) {
 	interest, balance := Cash(0.0), p.Balance
 	for i := 0; i < p.Months+p.Years*12; i++ {
 		balance += p.Save
-		interest += Cash(percent(float64(p.AER), float64(balance)) / 12.0)
+		interest += percent(p.AER, balance) / 12.0
 	}
 	return balance, interest
 }

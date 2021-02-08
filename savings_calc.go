@@ -51,7 +51,7 @@ func main() {
 		outputFunc = printJSONSummary
 	}
 	if len(scArgs) == 1 && (scArgs[0] == "-i" ||
-							 scArgs[0] == "--interactive") {
+							scArgs[0] == "--interactive") {
 		saved, earned = sc.SavingsCalc(sc.InteractiveMode())
 	} else if len(scArgs) <= 1 {
 		sc.Help()
